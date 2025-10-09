@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Instagram Unfollow Tracker</title>
+    <link rel="stylesheet" href="{% static 'procesador_instagram/styles.css' %}">
+</head>
+
+<body>
+    <h1>Sube tus archivos JSON de Instagram</h1>
+    <form method="post" enctype="multipart/form-data" action="">
+        {% csrf_token %}
+        <label for="followers">Archivo: followers_1.json</label>
+        <input type="file" id="followers" name="followers_file" required><br>
+        <label for="following">Archivo: following.json</label>
+        <input type="file" id="following" name="following_file" required><br>
+        <button type="submit">Subir archivos</button>
+    </form>
+</body>
+
+</html>
