@@ -1,42 +1,47 @@
 import json
 import csv
 
-def read_json_file(file_name):
-    with open(file_name, 'r', encoding='utf-8') as f:
+def read_followers():
+    with open("followers_1.json", "r", encoding="utf-8") as f:
         data = json.load(f)
 
-        usernames = []
+    followers = set()
 
-        if file_name == 'followers_1.json':
-            for user in data:
-                try:
-                    username = user['string_list_data'][0]['value']
-                    usernames.append(username)
-                except (KeyError, IndexError) as e:
-                    print(f"Error al acceder a los datos de un usuario en {file_name}: {e}")
-                    continue
+    for user in data:
+        try:
+            followers.add(user["string_list_data"][0]["value"])
+        except (KeyError, IndexError, TypeError):
+            continue
 
-        elif file_name == 'following.json':
-            relationships_following = data.get('relationships_following', [])
-            for user in relationships_following:
-                try:
-                    username = user['string_list_data'][0]['value']
-                    usernames.append(username)
-                except (KeyError, IndexError) as e:
-                    print(f"Error al acceder a los datos de un usuario en {file_name}: {e}")
-                    continue
+    return followers
 
-    return usernames
+def read_following():
+    with open("following.json", "r", encoding="utf-8") as f:
+        data = json.load(f)
 
-followers = set(read_json_file('followers_1.json'))
-following = set(read_json_file('following.json'))
+    following = set()
 
-non_followers = following - followers
+    for user in data.get("relationships_following", []):
+        try:
+            following.add(user["title"])
+        except KeyError:
+            continue
 
-with open('non_followers.csv', 'w', newline='', encoding='utf-8') as file:
+    return following
+
+followers = read_followers()
+following = read_following()
+
+non_followers = sorted(following - followers)
+
+with open("non_followers.csv", "w", newline="", encoding="utf-8") as file:
     writer = csv.writer(file)
-    writer.writerow(["Usuario"]) 
-    for user in sorted(non_followers):
+    writer.writerow(["Usuario"])
+    for user in non_followers:
         writer.writerow([user])
 
-print("Lista exportada a 'non_followers.csv'")
+print("Resumen:")
+print(f"Sigues: {len(following)}")
+print(f"Te siguen: {len(followers)}")
+print(f"No te siguen: {len(non_followers)}")
+print("Exportado a non_followers.csv")
