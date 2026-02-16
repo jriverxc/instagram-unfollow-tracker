@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Instagram Unfollow Tracker (Django)</title>
+  <title>Instagram Unfollow Tracker</title>
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -86,7 +86,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Instagram Unfollow Tracker (Django)</h1>
+    <h1>Instagram Unfollow Tracker</h1>
     <p class="muted">Sube tus archivos <strong>followers_1.json</strong> y <strong>following.json</strong> para encontrar quién no te sigue de vuelta.</p>
 
     <form method="post" enctype="multipart/form-data">
@@ -98,8 +98,7 @@
       <input id="following_file" name="following_file" type="file" accept=".json" required />
 
       <div class="buttons">
-        <button class="primary" type="submit" name="action" value="view">Ver resultado online</button>
-        <button class="secondary" type="submit" name="action" value="download">Descargar CSV</button>
+        <button class="primary" type="submit">Procesar archivos</button>
       </div>
     </form>
 
@@ -112,6 +111,14 @@
         <div class="card"><strong>Sigues:</strong> {{ stats.following_count }}</div>
         <div class="card"><strong>Te siguen:</strong> {{ stats.followers_count }}</div>
         <div class="card"><strong>No te siguen:</strong> {{ stats.non_followers_count }}</div>
+      </div>
+
+      <div class="buttons">
+        <form method="post" action="{% url 'download_csv' %}">
+          {% csrf_token %}
+          <input type="hidden" name="non_followers_json" value='{{ non_followers_json }}' />
+          <button class="secondary" type="submit">Descargar CSV</button>
+        </form>
       </div>
 
       <h2>Usuarios que no te siguen</h2>

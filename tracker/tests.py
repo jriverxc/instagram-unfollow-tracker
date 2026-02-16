@@ -8,7 +8,7 @@ class TrackerViewTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
 
-    def test_view_result(self):
+    def test_process_shows_result_immediately(self):
         followers = [{"string_list_data": [{"value": "alice"}]}]
         following = {"relationships_following": [{"title": "alice"}, {"title": "charlie"}]}
 
@@ -17,24 +17,17 @@ class TrackerViewTests(TestCase):
             {
                 'followers_file': SimpleUploadedFile('followers_1.json', json.dumps(followers).encode()),
                 'following_file': SimpleUploadedFile('following.json', json.dumps(following).encode()),
-                'action': 'view',
             },
         )
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'charlie')
+        self.assertContains(response, 'Descargar CSV')
 
     def test_download_csv(self):
-        followers = [{"string_list_data": [{"value": "alice"}]}]
-        following = {"relationships_following": [{"title": "alice"}, {"title": "charlie"}]}
-
         response = self.client.post(
-            '/',
-            {
-                'followers_file': SimpleUploadedFile('followers_1.json', json.dumps(followers).encode()),
-                'following_file': SimpleUploadedFile('following.json', json.dumps(following).encode()),
-                'action': 'download',
-            },
+            '/download-csv/',
+            {'non_followers_json': json.dumps(['charlie'])},
         )
 
         self.assertEqual(response.status_code, 200)

@@ -48,12 +48,11 @@ def build_csv(usernames: list[str]) -> str:
 
 
 def index(request: HttpRequest) -> HttpResponse:
-    context = {'error': None, 'stats': None, 'non_followers': None}
+    context = {'error': None, 'stats': None, 'non_followers': None, 'non_followers_json': None}
 
     if request.method == 'POST':
         followers_file = request.FILES.get('followers_file')
         following_file = request.FILES.get('following_file')
-        action = request.POST.get('action', 'view')
 
         if not followers_file or not following_file:
             context['error'] = 'Debes subir ambos archivos JSON.'
@@ -67,13 +66,28 @@ def index(request: HttpRequest) -> HttpResponse:
             return render(request, 'tracker/index.html', context)
 
         non_followers, stats = non_followers_from_payloads(followers_payload, following_payload)
-
-        if action == 'download':
-            response = HttpResponse(build_csv(non_followers), content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="non_followers.csv"'
-            return response
-
         context['stats'] = stats
         context['non_followers'] = non_followers
+        context['non_followers_json'] = json.dumps(non_followers)
 
     return render(request, 'tracker/index.html', context)
+
+
+def download_csv(request: HttpRequest) -> HttpResponse:
+    if request.method != 'POST':
+        return HttpResponse(status=405)
+
+    raw_usernames = request.POST.get('non_followers_json', '[]')
+    try:
+        usernames = json.loads(raw_usernames)
+    except json.JSONDecodeError:
+        usernames = []
+
+    if not isinstance(usernames, list):
+        usernames = []
+
+    usernames = [user for user in usernames if isinstance(user, str)]
+
+    response = HttpResponse(build_csv(usernames), content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="non_followers.csv"'
+    return response

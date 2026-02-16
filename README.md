@@ -1,14 +1,12 @@
-# Instagram Unfollow Tracker (Django)
+# Instagram Unfollow Tracker
 
-Ahora el proyecto funciona como **servicio web con Django**.
+Ahora el proyecto funciona como servicio web.
 
 ## ¿Qué hace?
 
 1. Subes `followers_1.json` y `following.json`.
-2. Calcula qué usuarios sigues y no te siguen de vuelta.
-3. Puedes:
-   - Ver el resultado online.
-   - Descargar el resultado como CSV.
+2. Procesa los archivos y te muestra la lista de inmediato en pantalla.
+3. Si quieres, desde el mismo resultado puedes descargar el CSV.
 
 ## Requisitos
 
@@ -39,10 +37,8 @@ Abrir en navegador:
 2. Ubica los archivos:
    - `followers_1.json`
    - `following.json`
-3. Súbelos desde la página principal.
-4. Elige:
-   - **Ver resultado online**
-   - **Descargar CSV**
+3. Súbelos en la página y presiona **Procesar archivos**.
+4. Verás la lista directamente en pantalla y tendrás botón **Descargar CSV**.
 
 ## Tests
 
