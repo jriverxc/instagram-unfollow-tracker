@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instagram Unfollow Tracker (Django)</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: #f9fafb;
+      padding: 2rem;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      background: #1f2937;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+    }
+    h1, h2 { margin-top: 0; }
+    .muted { color: #cbd5e1; }
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 1rem 0 0.35rem;
+    }
+    input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      background: #374151;
+      color: #f9fafb;
+      border: 1px solid #4b5563;
+      border-radius: 8px;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .75rem;
+      margin-top: 1.2rem;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: .7rem 1rem;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .primary { background: #22c55e; color: #052e16; }
+    .secondary { background: #0ea5e9; color: #082f49; }
+    .error {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 8px;
+      background: #7f1d1d;
+      border: 1px solid #ef4444;
+    }
+    ul {
+      margin: 0;
+      padding-left: 1.1rem;
+      max-height: 420px;
+      overflow: auto;
+      border: 1px solid #4b5563;
+      border-radius: 8px;
+      background: #111827;
+      padding-top: 0.75rem;
+      padding-bottom: 0.75rem;
+    }
+    li { margin-bottom: 0.2rem; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: .75rem;
+      margin: 1rem 0;
+    }
+    .card {
+      background: #111827;
+      border: 1px solid #4b5563;
+      border-radius: 8px;
+      padding: .75rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Instagram Unfollow Tracker (Django)</h1>
+    <p class="muted">Sube tus archivos <strong>followers_1.json</strong> y <strong>following.json</strong> para encontrar quién no te sigue de vuelta.</p>
+
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <label for="followers_file">Archivo followers_1.json</label>
+      <input id="followers_file" name="followers_file" type="file" accept=".json" required />
+
+      <label for="following_file">Archivo following.json</label>
+      <input id="following_file" name="following_file" type="file" accept=".json" required />
+
+      <div class="buttons">
+        <button class="primary" type="submit" name="action" value="view">Ver resultado online</button>
+        <button class="secondary" type="submit" name="action" value="download">Descargar CSV</button>
+      </div>
+    </form>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if stats %}
+      <div class="stats">
+        <div class="card"><strong>Sigues:</strong> {{ stats.following_count }}</div>
+        <div class="card"><strong>Te siguen:</strong> {{ stats.followers_count }}</div>
+        <div class="card"><strong>No te siguen:</strong> {{ stats.non_followers_count }}</div>
+      </div>
+
+      <h2>Usuarios que no te siguen</h2>
+      {% if non_followers %}
+        <ul>
+          {% for user in non_followers %}
+            <li>{{ user }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>¡Todo bien! No se encontraron usuarios en esta lista.</p>
+      {% endif %}
+    {% endif %}
+  </div>
+</body>
+</html>
